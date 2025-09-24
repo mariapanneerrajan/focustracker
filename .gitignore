@@ -1,3 +1,6 @@
+# Firebase service account key
+focustracker-cc949-firebase-adminsdk-fbsvc-8bf5fcafb8.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -118,3 +121,7 @@ lib/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Firebase credentials
+**/firebase-service-account.json
+**/firebase-*.json

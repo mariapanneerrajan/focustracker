@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import Dict, Any
 from fastapi import APIRouter, status
 from pydantic import BaseModel
+import logging
 
 class HealthResponse(BaseModel):
     """
@@ -83,8 +84,48 @@ async def detailed_health_check() -> Dict[str, Any]:
             "api_version": settings.API_V1_STR,
             "project_name": settings.PROJECT_NAME
         },
-        "services": {
-            "database": "not_configured",  # Will be updated in Phase 2
-            "authentication": "not_configured"  # Will be updated in Phase 3
-        }
+        "services": await get_services_health()
     }
+
+
+async def get_services_health() -> Dict[str, Any]:
+    """
+    Get health status of all services in the application.
+    
+    Returns:
+        Dictionary containing health status of all services
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        from ..services.container import get_service_container
+        
+        # Try to get service container health
+        try:
+            container = await get_service_container()
+            health_results = await container.health_check()
+            
+            # Extract service health information
+            services_health = {
+                "database": health_results.get("database", {"status": "unknown"}),
+                "authentication": {"status": "configured"},  # Will be updated in Phase 3
+                "container": health_results.get("container", {"status": "unknown"})
+            }
+            
+            return services_health
+            
+        except Exception as e:
+            logger.warning(f"Failed to get service container health: {e}")
+            return {
+                "database": {"status": "error", "details": str(e)},
+                "authentication": {"status": "not_configured"},
+                "container": {"status": "error", "details": "Service container not available"}
+            }
+    
+    except ImportError:
+        # Fallback if services are not yet available
+        return {
+            "database": {"status": "not_configured"},
+            "authentication": {"status": "not_configured"},
+            "container": {"status": "not_available"}
+        }

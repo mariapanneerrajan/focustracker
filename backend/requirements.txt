@@ -3,7 +3,7 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
 # Configuration management
-pydantic==2.5.0
+pydantic[email]==2.5.0
 pydantic-settings==2.1.0
 
 # Testing
@@ -17,3 +17,10 @@ ruff==0.1.6
 
 # Environment variables
 python-dotenv==1.0.0
+
+# Firebase dependencies
+firebase-admin==6.4.0
+google-cloud-firestore==2.13.1
+
+# Additional utilities for Firebase
+google-auth==2.25.2

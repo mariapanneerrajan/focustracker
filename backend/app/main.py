@@ -10,6 +10,8 @@ This module follows SOLID principles:
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.health import router as health_router
+from app.api.users import router as users_router
+from app.api.sessions import router as sessions_router
 from app.core.config import settings
 
 def create_app() -> FastAPI:
@@ -33,7 +35,7 @@ def create_app() -> FastAPI:
     # Configure CORS middleware for frontend integration
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
@@ -41,6 +43,8 @@ def create_app() -> FastAPI:
 
     # Register API routes
     app.include_router(health_router, tags=["Health"])
+    app.include_router(users_router, prefix=settings.API_V1_STR, tags=["Users"])
+    app.include_router(sessions_router, prefix=settings.API_V1_STR, tags=["Sessions"])
 
     return app
 
